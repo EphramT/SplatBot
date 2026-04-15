@@ -2,6 +2,8 @@ from utils.actions import Actions
 from utils.hex_grid import HexUtils, HexDirection
 from utils.splatbot_data_types import GameState
 
+DEBUG = True  # Set False to silence move logging
+
 
 class Bot:
     """
@@ -64,6 +66,24 @@ class Bot:
     # ── Main decision ─────────────────────────────────────────────────────────
 
     def decide(self, game_state: GameState):
+        action = self._decide(game_state)
+        if DEBUG:
+            player = game_state.me
+            opp = game_state.opponent
+            opp_str = (
+                f" | opp stun={opp.stun} pb_cd={opp.paintball_cooldown}"
+                if opp else ""
+            )
+            print(
+                f"[T{game_state.turn}] {type(action).__name__}"
+                f" | pb_cd={player.paintball_cooldown}"
+                f" splat_cd={player.splat_cooldown}"
+                f" dash_cd={player.dash_cooldown}"
+                f"{opp_str}"
+            )
+        return action
+
+    def _decide(self, game_state: GameState):
         player = game_state.me
 
         # Skip is the only legal action while stunned
